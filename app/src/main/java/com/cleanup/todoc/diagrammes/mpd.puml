@@ -1,0 +1,10 @@
+@startuml
+
+class taskdb {
+    long: id [PK]
+    ___
+    String: task_name
+    long: creation_timestamp
+}
+
+@enduml

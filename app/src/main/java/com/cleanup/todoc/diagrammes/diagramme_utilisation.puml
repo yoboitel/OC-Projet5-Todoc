@@ -1,0 +1,27 @@
+@startuml
+
+:Utilisateur de l'application: as User
+
+rectangle Todoc {
+
+usecase UC1 as "..Ajouter des tâches..
+Choisir un projet"
+
+usecase UC2 as "Visualisation des tâches
+et
+..Trier des tâches..
+Trier de A-Z
+Trier de Z-A
+Trier par plus anciens
+Trier par plus récents"
+
+usecase UC3 as "Supprimer des tâches"
+}
+
+User --> (UC1)
+
+User --> (UC2)
+
+User --> (UC3)
+
+@enduml
