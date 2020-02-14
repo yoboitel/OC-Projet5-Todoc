@@ -7,8 +7,9 @@ rectangle Todoc {
 usecase UC1 as "..Ajouter des tâches..
 Choisir un projet"
 
-usecase UC2 as "Visualisation des tâches
-et
+usecase UC2 as "Visualisation des tâches"
+
+usecase UC4 as "
 ..Trier des tâches..
 Trier de A-Z
 Trier de Z-A
@@ -23,5 +24,7 @@ User --> (UC1)
 User --> (UC2)
 
 User --> (UC3)
+
+User --> (UC4)
 
 @enduml

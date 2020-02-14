@@ -1,0 +1,19 @@
+@startuml
+
+class Project {
+    long: id [PK]
+    ___
+    String :name
+    int: color
+}
+
+class Task {
+    long: id [PK]
+    ___
+    long: project_id [FK]
+    String: name
+    long: creation_timestamp
+}
+
+Project "1"---"*" Task
+@enduml

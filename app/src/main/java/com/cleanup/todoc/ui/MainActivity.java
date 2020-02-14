@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
 import com.cleanup.todoc.R;
 import com.cleanup.todoc.database.RoomDatabase;
+import com.cleanup.todoc.database.RoomHelper;
 import com.cleanup.todoc.model.Project;
 import com.cleanup.todoc.model.Task;
 import java.lang.ref.WeakReference;
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      * List of all current tasks of the application
      */
     @NonNull
-    private ArrayList<Task> tasks = new ArrayList<>();
+    public ArrayList<Task> tasks = new ArrayList<>();
 
     /**
      * The adapter which handles the list of tasks
@@ -110,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
         listTasks.setAdapter(adapter);
 
         //TODO : RETRIEVE TASKS
-        new GetTasksAsync(this).execute();
+        new RoomHelper.GetTasksAsync(this).execute();
 
         findViewById(R.id.fab_add_task).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
     @Override
     public void onDeleteTask(Task task) {
         //TODO : CALL ASYNC TASK TO DELETE
-        new DeleteTaskASync(this).execute(task);
+        new RoomHelper.DeleteTaskASync(this).execute(task);
     }
 
     /**
@@ -213,15 +214,13 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
      */
     private void addTask(@NonNull Task task) {
         //TODO : EXECUTE ASYNC TASK TO ADD
-        new AddASync().execute(task);
-        tasks.add(task);
-        updateTasks();
+        new RoomHelper.AddASync(this).execute(task);
     }
 
     /**
      * Updates the list of tasks in the UI
      */
-    private void updateTasks() {
+    public void updateTasks() {
         if (tasks.size() == 0) {
             lblNoTasks.setVisibility(View.VISIBLE);
             listTasks.setVisibility(View.GONE);
@@ -325,76 +324,6 @@ public class MainActivity extends AppCompatActivity implements TasksAdapter.Dele
          * No sort
          */
         NONE
-    }
-
-    //TODO : ASYNC TASKS
-
-    //ASYNCTASK TO ADD TASK
-    private static class AddASync extends AsyncTask<Task, Void, Void> {
-        @Override
-        protected Void doInBackground(Task... tasks) {
-            for (Task task : tasks) {
-                task.setId(MainActivity.roomDatabase.myDao().addTask(task));
-            }
-            return null;
-        }
-    }
-
-    //ASYNCTASK TO DELETE TASK
-    private static class DeleteTaskASync extends AsyncTask<Task, Void, Void> {
-        private WeakReference<MainActivity> activityReference;
-
-        DeleteTaskASync(MainActivity mainActivity) {
-            activityReference = new WeakReference<>(mainActivity);
-        }
-
-        @Override
-        protected Void doInBackground(Task... tasks) {
-            MainActivity activity = activityReference.get();
-            if (activity != null && !activity.isFinishing()) {
-                for (Task task : tasks) {
-                    MainActivity.roomDatabase.myDao().deleteTask(task);
-                    activity.tasks.remove(task);
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            MainActivity activity = activityReference.get();
-            if (activity != null && !activity.isFinishing()) {
-                activity.updateTasks();
-            }
-        }
-    }
-
-    //ASYNCTASK TO GET TASKS
-    private static class GetTasksAsync extends AsyncTask<Void, Void, Void> {
-        private WeakReference<MainActivity> activityReference;
-
-        GetTasksAsync(MainActivity mainActivity) {
-            activityReference = new WeakReference<>(mainActivity);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            MainActivity activity = activityReference.get();
-            if (activity != null && !activity.isFinishing()) {
-                activity.tasks = (ArrayList<Task>) MainActivity.roomDatabase.myDao().getTasks();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            MainActivity activity = activityReference.get();
-            if (activity != null && !activity.isFinishing()) {
-                activity.updateTasks();
-            }
-        }
     }
 
 }
